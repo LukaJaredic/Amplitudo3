@@ -8,8 +8,17 @@
     }
 
     function getUsersFromFile($filename = "database.txt"){
-        $file_contents = file_get_contents($filename);
-        return $file_contents == "" ? [] : json_decode($file_contents, true);
+        $users = file_get_contents($filename);
+        $users == "" ? $users = [] : $users = json_decode($users, true);
+
+        //backwards compatability
+        for($i = 0; $i < count($users); $i++){
+            if(!isset($users[$i]['country_id'])){
+                $users[$i]['country_id'] = 0;
+                $users[$i]['city_id'] = null;
+            }
+        }
+        return $users;
     }
 
 ?>
