@@ -15,9 +15,11 @@
         $last_name = $_POST['last_name'];
         $email = $_POST['email'];
         $password = $_POST['password'];
+        $country_id = $_POST['country'];
+        $city_id = $_POST['city'];
 
         $users = getUsersFromFile(); // fetch from "DB"
-        $new_user = [ "id" => nextID($users) , "first_name" => $first_name, "last_name" => $last_name, "email" => $email, "password" => md5($password) ];
+        $new_user = [ "id" => nextID($users) , "first_name" => $first_name, "last_name" => $last_name, "email" => $email, "password" => md5($password),"country_id" => $country_id, "city_id" => $city_id];
 
         array_push($users, $new_user);
         writeToFile(json_encode($users));  // save to "DB"

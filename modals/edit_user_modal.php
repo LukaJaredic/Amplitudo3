@@ -1,4 +1,8 @@
 <!-- Modal -->
+<?php
+  $countries = getCountriesFromFile();
+
+?>
 <div class="modal fade" id="editUserModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -21,9 +25,27 @@
               </div>
           </div>
 
+          <label class="mt-3" for="country">Izaberi drzavu:</label>
+              <div class="col-12 mt-3">
+                <select class="form-select" name="country" id="countryEdit" onchange="changed(this.value,'cityEdit')">
+                  <?php
+                        foreach ($countries as $country){
+                            echo "<option value=".$country["id"].">".$country["name"]."</option>";
+                        }
+                  ?>
+                </select>
+              </div>
+
+              <label class="mt-3" for="city" id = "cityEditLabel" hidden = "true">Izaberi grad:</label>
+              <div class="col-12 mt-3">
+                <select class="form-select" name="city" id="cityEdit" hidden = "true">
+                 
+                </select>
+              </div>
+              <input type = "hidden" name="id" id="updateUserID">
           <div class="row mt-3">
               <div class="col-4 offset-4">
-                  <button class="btn btn-success w-100">Dodaj korisnika</button>
+                  <button class="btn btn-success w-100">Izmjeni</button>
               </div>
           </div>
       </form>

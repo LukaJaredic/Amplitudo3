@@ -3,8 +3,10 @@
     include './file_functions.php';
     include './users_functions.php';
     require './auth_functions.php';
+    require './country_city_functions.php';
     
     checkAuth();
+
 
     if($_SERVER['REQUEST_METHOD'] == "POST"){
 
@@ -12,6 +14,9 @@
         $last_name = $_POST['last_name'];
         $email = $_POST['email'];
         $id = $_POST['id'];
+        $country_id = $_POST['country'];
+        $city_id = $_POST['city'];
+
 
         $users = getUsersFromFile(); // fetch from "DB"
         
@@ -20,6 +25,13 @@
                 $user['first_name'] = $first_name;
                 $user['last_name'] = $last_name;
                 $user['email'] = $email;
+                $user['country_id'] = $country_id;
+
+                if(isCityInCountry($city_id, $country_id))
+                    $user['city_id'] = $city_id;
+                else
+                    $user['city_id'] = null;
+
             }
         }
         
@@ -29,6 +41,10 @@
         header("location:index.php?user_updated=1");
     }
 
-    
+    function isCityInCountry($city_id, $country_id){
+        $city = getCityByID($city_id);
+        return $city != null && $city["country_id"] == $country_id;
+    }
+  
 
 ?>

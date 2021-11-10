@@ -4,6 +4,7 @@
     require './users_functions.php';
     require './form_functions.php';
     require './auth_functions.php';
+    require './country_city_functions.php';
     
     checkAuth();
 ?>
@@ -44,9 +45,13 @@
                             <div class="col-3 text-start">
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#newUserModal" class="btn btn-primary w-100">Dodaj novog korisnika</a>
                             </div>
-                            <div class="col-3 offset-6">
+                            <div class="col-6 offset-1">
                                 <input type="text" placeholder="Pretraga..." name="term" class="form-control" id="searchTermInput" value="<?=isset($_GET['term']) ? $_GET['term'] : ''?>" >
                             </div>
+                            <div class="col-2">
+                                <a href="logout.php" class="btn btn-danger">Odjava</a>
+                            </div>
+                           
                         </div>
                     </form>
                 </div>
@@ -59,6 +64,8 @@
                         <th>Ime</th>
                         <th>Prezime</th>
                         <th>E-mail</th>
+                        <th>Država</th>
+                        <th>Grad</th>
                         <th>Izmjena</th>
                         <th>Brisanje</th>
                     </tr>
@@ -77,6 +84,8 @@
                            echo "   <td>".$users[$i]['first_name']."</td>";
                            echo "   <td>".$users[$i]['last_name']."</td>";
                            echo "   <td>".$users[$i]['email']."</td>";
+                           echo "   <td>".getCountryNameById($users[$i]['country_id'])."</td>";
+                           echo "   <td>".getCityNameById($users[$i]['city_id'])."</td>";
                            echo "   <td> <a class=\"btn btn-primary\" href=\"#\" onclick=\"showEditModal(".$users[$i]['id'].")\" >i</a> </td>";
                            echo "   <td> <a class=\"btn btn-danger\" href=\"#\" onclick=\"confirmDelete(".$users[$i]['id'].")\" >X</a> </td>";
                            echo "</tr> \n ";
@@ -114,28 +123,41 @@
 
         async function showEditModal(id){
             var editModal = new bootstrap.Modal(document.getElementById('editUserModal'), {});
-
-            // Promise + callback verzija
-            // fetch("http://localhost/uvod-php/api/user.php?id="+id)
-            //     .then((response) => response.json())
-            //     .then((responseJSON) => {
-            //         if(responseJSON.status == true){
-            //             let userData = responseJSON.data;
-            //             document.getElementById("editModalFirstName").value = userData.first_name;
-            //             document.getElementById("editModalLastName").value = userData.last_name;
-            //             document.getElementById("editModalEmail").value = userData.email;
-            //         }
-            //     })
-            
-            let response = await fetch("http://localhost/uvod-php/api/user.php?id="+id);
+ 
+            let response = await fetch("http://localhost/amplitudo3/api/user.php?id="+id);
             let responseJSON = await response.json();
+            console.log('cities');
+
             if(responseJSON.status == true){
                 let userData = responseJSON.data;
                 document.getElementById("editModalFirstName").value = userData.first_name;
                 document.getElementById("editModalLastName").value = userData.last_name;
                 document.getElementById("editModalEmail").value = userData.email;
+                document.getElementById("countryEdit").value = userData.country_id;
+                document.getElementById("updateUserID").value = userData.id;
+                let cityInput = document.getElementById("cityEdit");
+                let cityInputLabel = document.getElementById("cityEditLabel");
+
+                userData.country_id == 0 ? cityInput.hidden = true : cityInput.hidden = false;
+                userData.country_id == 0 ? cityInputLabel.hidden = true : cityInputLabel.hidden = false;
+
+                inflateCityInput(userData.country_id,userData.city_id, cityInput);
             }
             editModal.show();
+        }
+
+        async function inflateCityInput(countryID, cityID, inputElement){
+            
+            let response =await fetch('http://localhost/amplitudo3/api/get_cities.php?id='+countryID);
+            const cities = await response.json();
+            
+            
+            let innerHtml = '';
+            for(let city of cities){
+                innerHtml += `<option value=${city.id}>${city.name}</option>`
+            }
+            inputElement.innerHTML = innerHtml;
+            inputElement.value = cityID;
         }
 
     </script>    
